@@ -1,981 +1,541 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* ==========================================================================
+   ACCTHPA — Site Stylesheet (v3, redesign)
 
-:root {
-    --navy: #0b1b36;
-    --navy-light: #17365d;
-    --teal: #20b6aa;
-    --teal-dark: #159b91;
-    --gold: #c9a227;
+   Concept: "amber terminal" — a nod to the phosphor displays HPC operators
+   have always read code off of, translated into a calm academic layout.
+   Cool paper sections carry the reading (papers, schedule, registration);
+   two dark terminal panels bookend the page (hero, footer) and are the
+   only place the signal color is allowed to run loud.
 
-    --bg: #f7f8fc;
-    --white: #ffffff;
-    --border: #e3e7ef;
-    --muted: #69748a;
-    --text: #283548;
+   Tokens → Reset → Layout → Nav → Hero → Headings → Buttons
+   → Page sections → Footer → Responsive
+   ========================================================================== */
 
-    --shadow: 0 4px 18px rgba(11, 27, 54, 0.08);
-    --shadow-hover: 0 10px 30px rgba(11, 27, 54, 0.12);
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------------- */
+:root{
+  /* Terminal ink — dark panels (hero, footer) */
+  --ink-900:      #0b1220;
+  --ink-800:      #131c30;
+  --ink-line:     rgba(226,150,60,.22);
+  --ink-line-soft: rgba(255,255,255,.10);
+
+  /* Paper — reading surfaces */
+  --paper:        #eef0f5;
+  --paper-deep:   #e2e5ee;
+  --surface:      #ffffff;
+  --line:         #d7dbe6;
+
+  --text-primary:       #131b2e;
+  --text-secondary:     #57607a;
+  --text-on-dark:       #f4f6fb;
+  --text-on-dark-muted: #a7b0c4;
+  --text-nav:           #3c4763;
+  --text-footer:        #8f9ab0;
+
+  /* Signal — the one accent, used sparingly outside dark panels */
+  --amber:       #e2963c;
+  --amber-deep:  #b9741f;
+  --amber-tint:  #fbeedb;
+
+  --link-color:       var(--amber-deep);
+  --link-color-hover: var(--amber);
+
+  /* Type */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  --font-body:    'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-body:    .875rem;
+  --fs-nav:     .6875rem;
+  --fs-small:   .8125rem;
+  --fs-xsmall:  .6875rem;
+  --lh-body: 1.7;
+  --lh-tight: 1.15;
+
+  /* Fluid heading scale */
+  --fs-hero:    clamp(2rem, 1.25rem + 3.6vw, 3.5rem);
+  --fs-h1:      clamp(1.5rem, 1.2rem + 1.4vw, 1.875rem);
+  --fs-heading: clamp(1.0625rem, .95rem + .55vw, 1.25rem);
+  --fs-subhead: clamp(1rem, .93rem + .3vw, 1.0625rem);
+
+  /* Spacing scale (4px base) */
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.75rem;
+  --space-8: 4rem;
+
+  /* Layout */
+  --radius-sm: 3px;
+  --maxw-container: 73.75rem; /* 1180px */
+  --shadow-dropdown: 0 14px 34px rgba(11, 18, 32, .14);
+  --z-nav: 100;
+
+  /* Motion */
+  --ease: .2s ease;
 }
 
+/* --------------------------------------------------------------------------
+   2. Reset
+   -------------------------------------------------------------------------- */
+*, *::before, *::after{ box-sizing: border-box; }
 
-/* =========================================================
-   GLOBAL
-   ========================================================= */
-
-* {
-    box-sizing: border-box;
+html{
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-html {
-    scroll-behavior: smooth;
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+  *, *::before, *::after{
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-body {
-    position: relative;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh !important;
-
-    background: var(--bg);
-    color: var(--text);
-
-    font-family: 'Inter', Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 400 !important;
-    line-height: 1.7;
-
-    -webkit-font-smoothing: antialiased;
+body{
+  min-height: 100vh;
+  margin: 0;
+  background: var(--paper);
+  color: var(--text-primary);
+  font: 400 var(--fs-body)/var(--lh-body) var(--font-body);
 }
 
-a {
-    color: var(--teal-dark);
-    text-decoration: none;
-    transition: all 0.2s ease;
+img, svg{
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-a:hover {
-    color: var(--teal);
-    text-decoration: none;
+a{
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color var(--ease);
+}
+a:hover{ color: var(--link-color-hover); }
+
+:is(a, button, .nav-link, .my-button, .dropdown-item):focus-visible{
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
 
-p {
-    padding: 0;
-    margin: 0;
-    color: var(--muted);
+p{ margin: 0; color: var(--text-secondary); }
+b, strong{ color: var(--text-primary); font-weight: 700; }
+
+hr{
+  margin: var(--space-6) 0;
+  border: 0;
+  border-top: 1px solid var(--line);
 }
 
-b,
-strong {
-    color: var(--navy);
-    font-weight: 700;
+ul, ol{ margin: 0; padding-left: 1.2em; }
+li{ color: var(--text-secondary); }
+
+.container{
+  width: 100%;
+  max-width: var(--maxw-container);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
 }
 
-hr {
-    margin: 2.5rem 0;
-    border: 0;
-    border-top: 1px solid var(--border);
+/* --------------------------------------------------------------------------
+   3. Navigation
+   -------------------------------------------------------------------------- */
+.nav-container{
+  position: relative;
+  z-index: var(--z-nav);
+  background: rgb(255 255 255 / .97);
+  border-bottom: 1px solid var(--line);
 }
 
-.container {
-    max-width: 1180px;
+.navbar{
+  min-height: 3.875rem;
+  padding-block: 0;
 }
 
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-.nav-container {
-    position: relative;
-    z-index: 1000;
-
-    background: rgba(255, 255, 255, 0.98);
-    border-bottom: 1px solid var(--border);
-
-    box-shadow: 0 2px 12px rgba(11, 27, 54, 0.05);
+.navbar-brand{
+  margin-right: auto;
+  padding: 0;
+}
+.navbar-brand img{
+  height: 1.875rem;
+  width: auto;
+  object-fit: contain;
 }
 
-nav {
-    padding: 0 !important;
+.navbar-nav{ align-items: center; }
+
+.nav-link{
+  padding-block: 1.375rem;
+  padding-inline: .6875rem;
+  position: relative;
+  color: #3c4763;
+  font-family: var(--font-mono);
+  font-size: var(--fs-nav);
+  font-weight: 500;
+  letter-spacing: .05em;
+  text-transform: uppercase;
 }
-
-.navbar {
-    min-height: 72px;
-    padding: 0 !important;
+.nav-link::after{
+  content: "";
+  position: absolute;
+  left: .6875rem;
+  right: .6875rem;
+  bottom: .9375rem;
+  height: 2px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--ease);
 }
-
-.navbar-brand {
-    padding: 0;
-    margin-right: auto;
-}
-
-.navbar-brand img {
-    width: auto;
-    height: 44px;
-    object-fit: contain;
-}
-
-.navbar-nav {
-    align-items: center;
-}
-
-.nav-link {
-    position: relative;
-
-    color: #455066 !important;
-
-    font-size: 10px;
-    font-weight: 600 !important;
-
-    letter-spacing: 0.55px;
-    text-transform: uppercase;
-
-    padding: 27px 12px !important;
-
-    transition: all 0.25s ease;
-}
-
-.nav-link::after {
-    content: "";
-
-    position: absolute;
-    left: 50%;
-    bottom: 13px;
-
-    width: 0;
-    height: 2px;
-
-    background: var(--gold);
-
-    transform: translateX(-50%);
-    transition: all 0.25s ease;
-}
-
 .nav-link:hover,
-.nav-item.active > .nav-link {
-    color: var(--navy) !important;
+.nav-item.active > .nav-link{
+  color: var(--text-primary);
 }
-
 .nav-link:hover::after,
-.nav-item.active > .nav-link::after {
-    width: 25px;
+.nav-item.active > .nav-link::after{
+  transform: scaleX(1);
 }
 
-
-/* Dropdown */
-
-.navbar .nav-item .dropdown-menu {
-    min-width: 200px;
-
-    padding: 7px;
-    margin-top: 0;
-
-    background: var(--white);
-
-    border: 1px solid var(--border);
-    border-radius: 6px;
-
-    box-shadow: var(--shadow);
+.navbar .nav-item .dropdown-menu{
+  min-width: 12rem;
+  margin-top: 0;
+  padding: .4375rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-dropdown);
+}
+.navbar .nav-item .dropdown-menu .dropdown-item{
+  padding: .5rem .6875rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xsmall);
+}
+.navbar .nav-item .dropdown-menu .dropdown-item:hover{
+  background: var(--amber-tint);
+  color: var(--amber-deep);
 }
 
-.navbar .nav-item .dropdown-menu .dropdown-item {
-    color: var(--navy);
-
-    padding: 9px 12px;
-
-    font-size: 10px;
-    font-weight: 500;
-
-    border-radius: 4px;
-
-    transition: all 0.2s ease;
+.navbar-toggler{
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
 }
 
-.navbar .nav-item .dropdown-menu .dropdown-item:hover {
-    color: var(--navy);
-    background: #eef8f7;
+/* --------------------------------------------------------------------------
+   4. Hero / landing — the terminal panel
+   -------------------------------------------------------------------------- */
+.section-landing{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(27rem, 22rem + 9vw, 31rem);
+  padding: 4.375rem 1.5625rem 4.6875rem;
+  background:
+    radial-gradient(circle, rgba(226,150,60,.16) 1px, transparent 1px) 0 0/22px 22px,
+    var(--ink-900);
+  border-bottom: 1px solid var(--ink-line);
+  overflow: hidden;
+}
+.section-landing::before{
+  /* horizon glow, kept subtle */
+  content: "";
+  position: absolute;
+  inset: auto 0 -40% 0;
+  height: 60%;
+  background: radial-gradient(60% 100% at 50% 100%, rgba(226,150,60,.14), transparent 70%);
+  pointer-events: none;
+}
+.section-landing > div{
+  position: relative;
+  width: 100%;
+  max-width: var(--maxw-container);
+  margin-inline: auto;
+  text-align: center;
 }
 
-.navbar-toggler {
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 6px 9px;
+.section-landing img[src*="fisat.jpg"],
+.section-landing marquee{
+  display: none;
+}
+.section-landing img[src*="submit.png"]{
+  display: inline-block;
+  max-width: clamp(7.5rem, 6.6rem + 2vw, 9.0625rem);
+  margin-bottom: 1.5rem;
+  filter: brightness(0) invert(1) opacity(.92);
 }
 
-.navbar-toggler:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(32, 182, 170, 0.15);
+.section-landing h2{
+  max-width: 54rem;
+  margin: 0 auto;
+  color: var(--text-on-dark);
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.01em;
 }
 
-
-/* =========================================================
-   LANDING / HERO
-   ========================================================= */
-
-.section-landing {
-    position: relative;
-
-    min-height: 560px;
-
-    padding: 75px 25px 80px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff 0%,
-            #f7f8fc 100%
-        );
-
-    font-family: 'Inter', Arial, sans-serif;
-
-    border-bottom: 1px solid var(--border);
+.section-landing h3{
+  margin: 1.5rem 0 0;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: clamp(.6875rem, .64rem + .12vw, .75rem);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.section-landing h3:first-of-type::after{
+  content: "";
+  display: inline-block;
+  width: .5em;
+  height: 1em;
+  margin-left: .35em;
+  background: var(--amber);
+  vertical-align: -.15em;
+  animation: cursor-blink 1.1s steps(1) infinite;
+}
+.section-landing h3:last-child{
+  color: var(--text-on-dark-muted);
+  font-size: clamp(.75rem, .7rem + .12vw, .8125rem);
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-transform: none;
 }
 
-.section-landing > div {
-    width: 100%;
-    max-width: 1180px;
-    margin: auto;
+@keyframes cursor-blink{
+  0%, 49%{ opacity: 1; }
+  50%, 100%{ opacity: 0; }
 }
 
+/* --------------------------------------------------------------------------
+   5. Headings
+   -------------------------------------------------------------------------- */
+.heading{
+  display: inline-block;
+  position: relative;
+  padding-left: 1.1em;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--fs-heading);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: -.01em;
+}
+.heading::before{
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--amber-deep);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.heading p{ padding: 0; }
 
-/* FISAT logo */
-
-.section-landing img[src*="fisat.jpg"] {
-    display: inline-block !important;
-
-    width: auto !important;
-    max-width: 230px;
-
-    height: auto !important;
-
-    margin-bottom: 22px;
-
-    padding-bottom: 0 !important;
-
-    object-fit: contain;
+.sub-heading{
+  display: inline-block;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--fs-subhead);
+  font-weight: 600;
+  line-height: 1.3;
 }
 
+.home-page{ padding-bottom: var(--space-4); }
 
-/* Submission image */
+.section-landing + .container > .row{
+  padding-block: 3.5rem 3rem;
+}
+.section-landing + .container > .row > div{
+  padding-inline: clamp(1.25rem, 1rem + 1vw, 1.875rem);
+}
+.section-landing + .container .text-justify{
+  color: var(--text-secondary);
+  font-size: var(--fs-small);
+  line-height: 1.85;
+}
+.section-landing + .container hr{ margin: 0; }
 
-.section-landing img[src*="submit.png"] {
-    display: inline-block !important;
+/* --------------------------------------------------------------------------
+   6. Buttons
+   -------------------------------------------------------------------------- */
+.btn, button{ border-radius: var(--radius-sm); }
 
-    max-width: 155px;
-
-    height: auto !important;
-
-    padding-bottom: 0 !important;
-
-    margin: 8px 0 25px;
-
-    transition: all 0.25s ease;
+.my-button{
+  display: inline-block;
+  margin: 0 auto var(--space-6);
+  padding: .7rem 1.1rem;
+  border: 1px solid var(--amber);
+  background: transparent;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xsmall);
+  font-weight: 600;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+}
+.my-button::before{
+  content: "$ ";
+  opacity: .75;
+}
+.my-button:hover,
+.my-button:focus-visible{
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--ink-900);
 }
 
-.section-landing img[src*="submit.png"]:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
+/* --------------------------------------------------------------------------
+   7. Page sections
+   -------------------------------------------------------------------------- */
+.key-date{
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
+.registration table{
+  margin-top: var(--space-6);
+  color: var(--text-primary);
+  font-size: var(--fs-small);
+}
+.registration th{
+  padding: .75rem 1rem;
+  border-color: var(--line);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xsmall);
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--amber-deep);
+}
+.registration td{
+  padding: .7rem 1rem;
+  border-color: var(--line);
+}
+.registration tr:nth-child(even){ background: var(--paper-deep); }
 
-/* Remove old marquee appearance */
-
-.section-landing marquee {
-    display: block;
-
-    max-width: 850px;
-
-    margin: 0 auto 20px;
-
-    padding: 9px 14px;
-
-    background: #eef8f7;
-
-    border-left: 3px solid var(--teal);
-
-    color: var(--teal-dark);
-
-    font-size: 10px;
-    font-weight: 600;
-
-    text-align: center;
+.about p{
+  padding-top: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
 }
 
-.section-landing marquee a {
-    color: var(--teal-dark);
+#content h1{
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  line-height: var(--lh-tight);
 }
 
-
-/* Main conference title */
-
-.section-landing h2 {
-    position: relative;
-
-    max-width: 930px;
-
-    margin: 0 auto;
-
-    color: var(--navy) !important;
-
-    font-size: clamp(36px, 5vw, 60px);
-
-    line-height: 1.08;
-
-    font-weight: 800;
-
-    letter-spacing: -2px;
-
-    text-align: center;
+#bodyContent p{
+  padding-top: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--fs-small);
+  line-height: 1.85;
 }
 
-
-/* Gold accent */
-
-.section-landing h2::before {
-    content: "";
-
-    display: block;
-
-    width: 50px;
-    height: 3px;
-
-    margin: 0 auto 22px;
-
-    background: var(--gold);
+.place{
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
-
-/* Date */
-
-.section-landing h3 {
-    margin: 22px 0 0;
-
-    padding: 0 !important;
-
-    color: var(--teal-dark) !important;
-
-    font-size: 11px;
-
-    line-height: 1.6;
-
-    font-weight: 700;
-
-    letter-spacing: 0.9px;
-
-    text-transform: uppercase;
-
-    text-align: center;
+.organizers h1{
+  padding-block: var(--space-6);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.organizers h3{
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.organizers p{
+  max-width: 70vh;
+  color: var(--text-secondary);
 }
 
+#map{ width: 100%; height: 45rem; filter: grayscale(.15) contrast(1.02); }
+#kalady-map{ height: 25rem; margin-bottom: var(--space-8); }
 
-/* Location */
-
-.section-landing h3:last-child {
-    color: var(--muted) !important;
-
-    font-size: 11px;
-
-    font-weight: 400;
-
-    letter-spacing: 0;
-
-    text-transform: none;
+.sponsors-logo img{
+  max-width: 12.5rem;
+  max-height: 5rem;
+  width: auto;
+  height: auto;
+  margin-top: var(--space-5);
+  margin-right: var(--space-6);
+  object-fit: contain;
 }
 
+/* --------------------------------------------------------------------------
+   8. Footer — the terminal panel, again
+   -------------------------------------------------------------------------- */
+footer{
+  padding: 2rem 0 1.875rem;
+  background: var(--ink-900);
+  color: var(--text-footer);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xsmall);
+}
+footer .container hr{
+  margin: 0 0 1.375rem;
+  border-top: 1px solid var(--ink-line-soft);
+}
+footer p{
+  max-width: var(--maxw-container);
+  margin-inline: auto;
+  padding-inline: .9375rem;
+  color: var(--text-footer);
+  line-height: 1.85;
+}
+footer a{ color: var(--amber); }
+footer a:hover{ color: var(--text-on-dark); }
 
-/* =========================================================
-   SECTION HEADINGS
-   ========================================================= */
-
-.heading {
-    display: inline-block;
-
-    position: relative;
-
-    font-family: 'Inter', Arial, sans-serif;
-
-    color: var(--navy);
-
-    font-size: 21px;
-
-    line-height: 1.25;
-
-    font-weight: 800;
-
-    letter-spacing: -0.5px;
-
-    text-transform: uppercase;
-
-    border: 0;
-
-    padding-bottom: 10px;
-
-    margin-bottom: 12px;
+/* --------------------------------------------------------------------------
+   9. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px){
+  .navbar{ padding: .625rem .9375rem; }
+  .navbar-brand img{ max-width: 11.25rem; }
+  .navbar-nav{ align-items: flex-start; padding-block: var(--space-2); }
+  .nav-link{ padding-block: .5625rem; }
+  .nav-link::after{ bottom: .1875rem; }
 }
 
-.heading::after {
-    content: "";
+@media (max-width: 767.98px){
+  body{ font-size: var(--fs-small); }
+  .navbar-brand img{ height: 2.625rem; width: auto; }
 
-    display: block;
+  .section-landing{ padding: 3rem 1.125rem 3.375rem; }
+  .section-landing + .container > .row{ padding-block: 2.5rem; }
+  .section-landing + .container > .row > div + div{ margin-top: 2.1875rem; }
 
-    width: 42px;
-    height: 3px;
+  #map{ height: 28.125rem; }
+  #kalady-map{ height: 20rem; }
 
-    margin-top: 9px;
+  .sponsors-logo img{ max-width: 10.625rem; margin-right: var(--space-4); }
 
-    background: var(--gold);
-}
-
-.sub-heading {
-    display: inline-block;
-
-    color: var(--navy);
-
-    font-size: 17px;
-
-    line-height: 1.4;
-
-    font-weight: 700;
-
-    border: 0;
-
-    padding-bottom: 7px;
-}
-
-.heading p {
-    padding: 0;
-}
-
-.home-page {
-    padding: 0 0 16px !important;
-}
-
-
-/* =========================================================
-   HOMEPAGE CONTENT
-   ========================================================= */
-
-.section-landing + .container > .row {
-    padding: 65px 0 55px;
-}
-
-.section-landing + .container > .row > div {
-    padding-left: 30px;
-    padding-right: 30px;
-}
-
-.section-landing + .container .text-justify {
-    font-size: 12px;
-
-    line-height: 1.9;
-
-    color: var(--muted);
-}
-
-.section-landing + .container hr {
-    margin: 0;
-}
-
-
-/* =========================================================
-   GENERAL BUTTON
-   ========================================================= */
-
-.my-button {
-    display: inline-block;
-
-    text-decoration: none !important;
-
-    margin: 0 auto 2rem;
-
-    color: var(--navy);
-
-    padding: 0.7rem 1.25rem;
-
-    border: 1px solid var(--navy);
-
-    background: var(--white);
-
-    white-space: nowrap;
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    letter-spacing: 0.25px;
-
-    border-radius: 4px;
-
-    transition: all 0.25s ease;
-}
-
-.my-button:hover {
-    text-decoration: none;
-
-    color: var(--white);
-
-    border-color: var(--navy);
-
-    background: var(--navy);
-
-    box-shadow: var(--shadow);
-
-    transform: translateY(-2px);
-}
-
-.btn,
-button {
-    border-radius: 4px !important;
-}
-
-
-/* =========================================================
-   ABOUT
-   ========================================================= */
-
-.about p {
-    padding-top: 1rem;
-
-    font-size: 13px;
-
-    font-weight: 400;
-
-    color: var(--muted);
-
-    line-height: 1.9;
-}
-
-
-/* =========================================================
-   KEY DATES
-   ========================================================= */
-
-.key-date {
-    font-weight: 700;
-    color: var(--navy);
-}
-
-
-/* =========================================================
-   REGISTRATION
-   ========================================================= */
-
-.registration ul {
-    margin-top: 2rem;
-}
-
-.registration table {
-    width: 100%;
-
-    margin-top: 2rem;
-
-    color: var(--navy);
-
-    background: var(--white);
-
-    border: 1px solid var(--border);
-
-    border-radius: 6px;
-
-    border-collapse: separate;
-    border-spacing: 0;
-
-    overflow: hidden;
-
-    box-shadow: 0 3px 15px rgba(11, 27, 54, 0.05);
-}
-
-.registration th,
-.registration td {
-    padding: 12px 16px;
-
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-}
-
-.registration th {
-    background: var(--navy);
-    color: var(--white);
-
-    font-weight: 600;
-}
-
-.registration td {
-    color: var(--muted);
-}
-
-.registration tr:nth-child(even) {
-    background: #f3f8f7;
-}
-
-.registration tr:hover {
-    background: #eef8f7;
-}
-
-
-/* =========================================================
-   CONTENT
-   ========================================================= */
-
-#content h1 {
-    font-size: 28px;
-
-    line-height: 1.2;
-
-    font-weight: 800;
-
-    color: var(--navy);
-}
-
-#bodyContent p {
-    padding-top: 1rem;
-
-    font-size: 12px;
-
-    line-height: 1.8;
-
-    color: var(--muted);
-}
-
-.place {
-    font-size: 24px !important;
-
-    color: var(--navy) !important;
-
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   ORGANIZERS
-   ========================================================= */
-
-.organizers h3 {
-    color: var(--navy);
-
-    font-size: 13px;
-
-    font-weight: 700;
-}
-
-.organizers h1 {
-    padding: 2rem 0;
-
-    color: var(--navy);
-
-    font-weight: 800;
-}
-
-.organizers p {
-    max-width: 70vh;
-
-    color: var(--muted);
-}
-
-li {
-    color: var(--muted);
-
-    margin-bottom: 4px;
-}
-
-
-/* =========================================================
-   MAPS
-   ========================================================= */
-
-#map {
-    height: 720px;
-
-    width: 100%;
-
-    border: 1px solid var(--border);
-
-    border-radius: 6px;
-
-    overflow: hidden;
-
-    box-shadow: var(--shadow);
-}
-
-#kalady-map {
-    height: 400px;
-
-    margin-bottom: 4rem;
-
-    border: 1px solid var(--border);
-
-    border-radius: 6px;
-
-    overflow: hidden;
-
-    box-shadow: var(--shadow);
-}
-
-
-/* =========================================================
-   SPONSORS
-   ========================================================= */
-
-.sponsors-logo img {
-    width: auto;
-
-    max-width: 200px;
-
-    height: auto;
-
-    max-height: 80px;
-
-    margin-right: 2rem;
-
-    margin-top: 1.5rem;
-
-    padding: 10px;
-
-    object-fit: contain;
-
-    background: var(--white);
-
-    border: 1px solid var(--border);
-
-    border-radius: 5px;
-
-    transition: all 0.25s ease;
-}
-
-.sponsors-logo img:hover {
-    transform: translateY(-3px);
-
-    box-shadow: var(--shadow-hover);
-}
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-footer {
-    position: relative;
-
-    bottom: auto !important;
-
-    width: 100%;
-
-    min-height: auto;
-
-    margin-top: 0;
-
-    padding: 0 0 30px;
-
-    background: var(--navy);
-
-    text-align: left;
-
-    font-size: 9px;
-
-    color: #aeb9ca;
-
-    border-top: 3px solid var(--gold);
-}
-
-footer .container {
-    padding: 0;
-}
-
-footer .container hr {
-    margin: 0 0 22px;
-
-    border-top-color: rgba(255, 255, 255, 0.12);
-}
-
-footer p {
-    max-width: 1180px;
-
-    margin: 0 auto;
-
-    padding: 0 15px;
-
-    color: #aeb9ca;
-
-    line-height: 1.8;
-}
-
-footer a {
-    color: #61cfc5;
-}
-
-footer a:hover {
-    color: var(--white);
-}
-
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 991.98px) {
-
-    .navbar {
-        padding: 10px 15px !important;
-    }
-
-    .navbar-brand img {
-        max-width: 180px;
-
-        height: auto;
-    }
-
-    .navbar-nav {
-        align-items: flex-start;
-
-        padding: 10px 0;
-    }
-
-    .nav-link {
-        padding: 9px 0 !important;
-    }
-
-    .nav-link::after {
-        display: none;
-    }
-
-    .section-landing {
-        min-height: 470px;
-
-        padding: 60px 25px;
-    }
-
-    .section-landing h2 {
-        font-size: 43px;
-
-        letter-spacing: -1.3px;
-    }
-
-    .section-landing + .container > .row > div {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 767.98px) {
-
-    body {
-        font-size: 12px;
-    }
-
-    .navbar-brand img {
-        height: 42px;
-
-        width: auto;
-    }
-
-    .section-landing {
-        min-height: 450px;
-
-        padding: 45px 18px 55px;
-    }
-
-    .section-landing img[src*="fisat.jpg"] {
-        max-width: 180px;
-    }
-
-    .section-landing h2 {
-        font-size: 34px;
-
-        letter-spacing: -1px;
-    }
-
-    .section-landing h3 {
-        font-size: 8px;
-    }
-
-    .section-landing h3:last-child {
-        font-size: 10px;
-    }
-
-    .section-landing marquee {
-        font-size: 9px;
-    }
-
-    .heading {
-        font-size: 19px;
-    }
-
-    .sub-heading {
-        font-size: 16px;
-    }
-
-    .section-landing + .container > .row {
-        padding: 40px 0;
-    }
-
-    .section-landing + .container > .row > div + div {
-        margin-top: 35px;
-    }
-
-    #map {
-        height: 450px;
-    }
-
-    #kalady-map {
-        height: 320px;
-    }
-
-    .sponsors-logo img {
-        max-width: 170px;
-
-        margin-right: 1rem;
-    }
-
-    footer {
-        padding-bottom: 25px;
-    }
-
-    footer p {
-        padding: 0 20px;
-    }
-
-    .registration table {
-        display: block;
-
-        overflow-x: auto;
-
-        white-space: nowrap;
-    }
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 480px) {
-
-    .section-landing h2 {
-        font-size: 29px;
-    }
-
-    .section-landing img[src*="submit.png"] {
-        max-width: 125px;
-    }
-
-    .heading {
-        font-size: 18px;
-    }
-
-    .sub-heading {
-        font-size: 16px;
-    }
-
-    .my-button {
-        font-size: 9px;
-    }
+  footer{ padding-bottom: 1.5625rem; }
+  footer p{ padding-inline: 1.25rem; }
 }
