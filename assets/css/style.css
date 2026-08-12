@@ -235,6 +235,21 @@ li{ color: var(--text-secondary); }
   border-radius: var(--radius-sm);
 }
 
+.event-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none !important;
+    padding: 8px 14px;
+}
+
+.event-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #123b5d;
+}
+
 /* --------------------------------------------------------------------------
    4. Hero / landing — the formal dark panel
    -------------------------------------------------------------------------- */
@@ -245,10 +260,7 @@ li{ color: var(--text-secondary); }
   justify-content: center;
   min-height: clamp(27rem, 22rem + 9vw, 31rem);
   padding: 4.375rem 1.5625rem 4.6875rem;
-  background:
-    linear-gradient(rgba(184,148,90,.07) 1px, transparent 1px) 0 0/100% 34px,
-    linear-gradient(90deg, rgba(184,148,90,.07) 1px, transparent 1px) 0 0/34px 100%,
-    var(--ink-900);
+  background: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px) 0 0 / 34px 34px, linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px) 0 0 / 34px 34px, linear-gradient(135deg, #072855 0%, #10388e 40%, #dcebf7 75%, #ffffff 100%);
   border-bottom: 1px solid var(--ink-line);
   overflow: hidden;
 }
@@ -269,7 +281,6 @@ li{ color: var(--text-secondary); }
   text-align: center;
 }
 
-.section-landing img[src*="fisat.jpg"],
 .section-landing marquee{
   display: none;
 }
@@ -376,6 +387,25 @@ li{ color: var(--text-secondary); }
   background: var(--amber);
   border-color: var(--amber);
   color: var(--ink-900);
+}
+
+.submit-button {
+    display: inline-block;
+    padding: 12px 28px;
+    margin: 20px 0 30px;
+    border: 1px solid #333;
+    color: #ffffff;
+    background: transparent;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background: #333;
+    color: #fff;
 }
 
 /* --------------------------------------------------------------------------
