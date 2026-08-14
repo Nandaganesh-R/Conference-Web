@@ -547,7 +547,25 @@ footer a{ color: var(--amber); }
 footer a:hover{ color: var(--text-on-dark); }
 
 /* --------------------------------------------------------------------------
-   9. Responsive
+   9. Footer Positioning & Page Layout
+   -------------------------------------------------------------------------- */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsive
    -------------------------------------------------------------------------- */
 @media (max-width: 991.98px){
   .navbar{ padding: .625rem .9375rem; }
